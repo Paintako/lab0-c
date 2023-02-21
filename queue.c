@@ -174,6 +174,8 @@ bool q_delete_dup(struct list_head *head)
     // note:
     // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
 
+
+
     return true;
 }
 
@@ -184,11 +186,37 @@ void q_swap(struct list_head *head)
 }
 
 /* Reverse elements in queue */
-void q_reverse(struct list_head *head) {}
+void q_reverse(struct list_head *head)
+{
+    if (!head)
+        return;
+
+    struct list_head *it, *safe;
+    list_for_each_safe (it, safe, head)
+        list_move(it, head);
+}
 
 /* Reverse the nodes of the list k at a time */
 void q_reverseK(struct list_head *head, int k)
 {
+    if (!head || list_is_singular(head) || list_empty(head))
+        return;
+
+    int top = 0;
+    struct list_head *cur, *cur_prev_k = head->next;
+    struct list_head *safe = NULL, *tmp = NULL;
+
+    list_for_each_safe (cur, safe, head) {
+        top++;
+        if (top % k == 0) {
+            tmp = cur;
+            while (cur_prev_k != tmp) {
+                list_move(tmp->prev, cur);
+                cur = cur->next;
+            }
+            cur_prev_k = cur->next;
+        }
+    }
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
 }
 
