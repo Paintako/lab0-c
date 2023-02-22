@@ -31,6 +31,10 @@ void q_free(struct list_head *l)
     // iterate over a list safe against removal of list entry
     list_for_each_safe (pos, n, l) {
         // free the currenct postion
+        if (!pos) {
+            free(l);
+            return;
+        }
         free(pos);
     }
     // after removing all nodes in queue, free head pointer
@@ -171,10 +175,8 @@ bool q_delete_mid(struct list_head *head)
 /* Delete all nodes that have duplicate string */
 bool q_delete_dup(struct list_head *head)
 {
-    // note:
     // https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
-
-
+    // 在已經排序的狀況，移走佇列中具備重複內容的節點
 
     return true;
 }
@@ -183,6 +185,20 @@ bool q_delete_dup(struct list_head *head)
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
+    if (!head)
+        return;
+    // void list_add(*node, *target): insert node after target
+    // void list_del(*node): remove target node form list
+
+    struct list_head *n = head->next;
+    struct list_head *t = NULL;
+    while (n != head && n->next != head) {
+        t = n;
+        list_move(n, t->next);
+        n = n->next;
+    }
+
+    return;
 }
 
 /* Reverse elements in queue */
@@ -199,24 +215,6 @@ void q_reverse(struct list_head *head)
 /* Reverse the nodes of the list k at a time */
 void q_reverseK(struct list_head *head, int k)
 {
-    if (!head || list_is_singular(head) || list_empty(head))
-        return;
-
-    int top = 0;
-    struct list_head *cur, *cur_prev_k = head->next;
-    struct list_head *safe = NULL, *tmp = NULL;
-
-    list_for_each_safe (cur, safe, head) {
-        top++;
-        if (top % k == 0) {
-            tmp = cur;
-            while (cur_prev_k != tmp) {
-                list_move(tmp->prev, cur);
-                cur = cur->next;
-            }
-            cur_prev_k = cur->next;
-        }
-    }
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
 }
 
