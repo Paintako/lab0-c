@@ -31,11 +31,8 @@ void q_free(struct list_head *l)
     // iterate over a list safe against removal of list entry
     list_for_each_safe (pos, n, l) {
         // free the currenct postion
-        if (!pos) {
-            free(l);
-            return;
-        }
-        free(pos);
+        element_t *free_point = list_entry(pos, element_t, list);
+        q_release_element(free_point);
     }
     // after removing all nodes in queue, free head pointer
     free(l);
