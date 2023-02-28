@@ -116,6 +116,12 @@ static bool report(void)
     return true;
 }
 
+static int cmp(const void *a, const void *b)
+{
+    return *(uint64_t *) a - *(uint64_t *) b;
+}
+
+
 static bool doit(int mode)
 {
     int64_t *before_ticks = calloc(N_MEASURES + 1, sizeof(int64_t));
@@ -131,8 +137,13 @@ static bool doit(int mode)
 
     prepare_inputs(input_data, classes);
 
+
     bool ret = measure(before_ticks, after_ticks, input_data, mode);
     differentiate(exec_times, before_ticks, after_ticks);
+    // before update statistics, delete outlier ( 離群值 )
+    qsort(exec_times, N_MEASURES, sizeof(int64_t), cmp);
+    memset(exec_times, 0, DROP_SIZE);
+    memset(&exec_times[N_MEASURES - DROP_SIZE], 0, DROP_SIZE);
     update_statistics(exec_times, classes);
     ret &= report();
 
@@ -170,8 +181,11 @@ static bool test_const(char *text, int mode)
     return result;
 }
 
-#define DUT_FUNC_IMPL(op) \
-    bool is_##op##_const(void) { return test_const(#op, DUT(op)); }
+#define DUT_FUNC_IMPL(op)                \
+    bool is_##op##_const(void)           \
+    {                                    \
+        return test_const(#op, DUT(op)); \
+    }
 
 #define _(x) DUT_FUNC_IMPL(x)
 DUT_FUNCS
