@@ -6,6 +6,9 @@ qtest
 .devcontainer
 core*
 .cmd_history
+massif*
+head
+strLen
 
 # ctags files
 TAGS
